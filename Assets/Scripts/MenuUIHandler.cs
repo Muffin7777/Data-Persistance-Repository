@@ -12,11 +12,13 @@ public class MenuUIHandler : MonoBehaviour
 {
     public TMP_InputField nameInput;
     public TMP_Text nameWarning;
+    public TMP_Text sizeWarning;
 
     public void NewLetter()
     {
         MainManager.Instance.playerName = nameInput.text;
         nameWarning.gameObject.SetActive(false);
+        sizeWarning.gameObject.SetActive(false);
     }
 
     private void Start()
@@ -30,14 +32,24 @@ public class MenuUIHandler : MonoBehaviour
 
     public void StartNew()
     {
-        if (MainManager.Instance.playerName != null && MainManager.Instance.playerName.Length > 0) {
+        if (MainManager.Instance.playerName != null && MainManager.Instance.playerName.Length > 0 && MainManager.Instance.playerName.Length < 13) {
             SceneManager.LoadScene(1);
+        }
+        else if (MainManager.Instance.playerName.Length >= 13)
+        {
+            sizeWarning.gameObject.SetActive(true);
         }
         else
         {
             nameWarning.gameObject.SetActive(true);
         }
     }
+
+
+    public void goToHighScoreMenu(){
+        SceneManager.LoadScene(2);
+    }
+
 
     public void Exit()
     {

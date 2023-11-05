@@ -21,18 +21,29 @@ public class MainManager : MonoBehaviour
     public string playerName;
     private bool m_Started;
     private int m_Points;
-    private int highest_Points;
-    private string highest_Scorer;
 
+    public class HighScoreEntry
+    {
+        public int position;
+        public int points;
+        public string scorer;
+    }
+
+    public HighScoreEntry[] highScore = new HighScoreEntry[3];
     private bool m_GameOver;
 
 
     private void Awake()
     {
-        if (Instance != null)
+
+        if (Instance != null && SceneManager.GetActiveScene().buildIndex == 1)
         {
             InitializeGameObjects();
             Instance.StartNew();
+            Destroy(gameObject);
+            return;
+        }else if(Instance != null)
+        {
             Destroy(gameObject);
             return;
         }
@@ -75,6 +86,7 @@ public class MainManager : MonoBehaviour
         m_Started = false;
         m_Points = 0;
         UpdateBestScoreText();
+        ScoreText.text = $"Player: {playerName}  Score : {m_Points}";
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
 
@@ -100,8 +112,6 @@ public class MainManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 m_Started = true;
-                Debug.Log("StartKeyDown");
-                Debug.Log(m_Started);
                 float randomDirection = Random.Range(-1.0f, 1.0f);
                 Vector3 forceDir = new Vector3(randomDirection, 1, 0);
                 forceDir.Normalize();
@@ -128,12 +138,12 @@ public class MainManager : MonoBehaviour
     void AddPoint(int point)
     {
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"Player: {playerName}  Score : {m_Points}";
     }
 
     void UpdateBestScoreText()
     {
-        BestScoreText.text = $"Best Score : {highest_Scorer} : {highest_Points}";
+        BestScoreText.text = $"Best Score : {highScore[0].scorer} : {highScore[0].points}";
     } 
 
 
@@ -141,53 +151,119 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
-        if (m_Points > highest_Points)
+        if (m_Points > highScore[2].points)
         {
-            highest_Points = m_Points;
-            highest_Scorer = playerName;
+            FindPositionAndUpdateHighScore();
+
             UpdateBestScoreText();
             SaveHighScore();
 
         }
     }
 
-
+    public void FindPositionAndUpdateHighScore()
+    {
+        int arrayPos = 2;
+        if (m_Points > highScore[1].points)
+        {
+            highScore[2].points = highScore[1].points;
+            highScore[2].scorer = highScore[1].scorer;
+            arrayPos = 1;
+        }
+        if (m_Points > highScore[0].points)
+        {
+            highScore[1].points = highScore[0].points;
+            highScore[1].scorer = highScore[0].scorer;
+            arrayPos = 0;
+        }
+        highScore[arrayPos].points = m_Points;
+        highScore[arrayPos].scorer = playerName;
+    }
 
     /*Persist data*/ 
     [System.Serializable]
     class SaveData
     {
-        public int highestScore;
-        public string highestScorer;
+
+        public int highScoreFirstPosition;
+        public int highScoreFirstPoints;
+        public string highScoreFirstScorer;
+
+        public int highScoreSecondPosition;
+        public int highScoreSecondPoints;
+        public string highScoreSecondScorer;
+
+        public int highScoreThirdPosition;
+        public int highScoreThirdPoints;
+        public string highScoreThirdScorer;
+
     }
+
+
 
 
     public void SaveHighScore()
     {
-        SaveData data = new SaveData();
-        data.highestScore = highest_Points;
-        data.highestScorer = highest_Scorer;
+        SaveData data = new();
+
+        data.highScoreFirstPoints = highScore[0].points;
+        data.highScoreFirstScorer = highScore[0].scorer;
+        data.highScoreFirstPosition = highScore[0].position;
+
+        data.highScoreSecondPoints = highScore[1].points;
+        data.highScoreSecondScorer = highScore[1].scorer;
+        data.highScoreSecondPosition = highScore[1].position;
+
+        data.highScoreThirdPoints = highScore[2].points;
+        data.highScoreThirdScorer = highScore[2].scorer;
+        data.highScoreThirdPosition = highScore[2].position;
+
 
         string json = JsonUtility.ToJson(data);
 
-        File.WriteAllText(Application.persistentDataPath + "/savefile.json", json);
+        File.WriteAllText(Application.persistentDataPath + "/savedHighScore.json", json);
     }
 
     public void LoadHighScore()
     {
-        string path = Application.persistentDataPath + "/savefile.json";
+        string path = Application.persistentDataPath + "/savedHighScore.json";
         if (File.Exists(path))
         {
             string json = File.ReadAllText(path);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            highest_Scorer = data.highestScorer;
-            highest_Points = data.highestScore;
+            highScore[0] = new HighScoreEntry();
+            highScore[0].position = data.highScoreFirstPosition;
+            highScore[0].points = data.highScoreFirstPoints;
+            highScore[0].scorer = data.highScoreFirstScorer;
+
+            highScore[1] = new HighScoreEntry();
+            highScore[1].position = data.highScoreSecondPosition;
+            highScore[1].points = data.highScoreSecondPoints;
+            highScore[1].scorer = data.highScoreSecondScorer;
+
+            highScore[2] = new HighScoreEntry();
+            highScore[2].position = data.highScoreThirdPosition;
+            highScore[2].points = data.highScoreThirdPoints;
+            highScore[2].scorer = data.highScoreThirdScorer;
+         
         }
         else
         {
-            highest_Scorer = "none";
-            highest_Points = 0;
+            FillHighScoreWithDefaultValues();
         }
     }
+
+    public void FillHighScoreWithDefaultValues()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            highScore[i] = new HighScoreEntry();
+            highScore[i].position = i;
+            highScore[i].points = 0;
+            highScore[i].scorer = "none";
+        }
+    }
+
+
 }

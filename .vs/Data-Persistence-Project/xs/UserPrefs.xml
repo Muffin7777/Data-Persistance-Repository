@@ -1,9 +1,10 @@
 ﻿<Properties StartupConfiguration="{605E68B8-218E-F84C-0873-6FCA3FB51308}|">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/DeathZone.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/MainManager.cs">
     <Files>
-      <File FileName="Assets/Scripts/MainManager.cs" Line="145" Column="25" />
-      <File FileName="Assets/Scripts/MenuUIHandler.cs" Line="12" Column="2" />
-      <File FileName="Assets/Scripts/DeathZone.cs" Line="13" Column="21" />
+      <File FileName="Assets/Scripts/MainManager.cs" Line="213" Column="78" />
+      <File FileName="Assets/Scripts/MenuUIHandler.cs" Line="49" Column="37" />
+      <File FileName="Assets/Scripts/DeathZone.cs" />
+      <File FileName="Assets/Scripts/HighScoreUIManager.cs" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
@@ -11,7 +12,7 @@
           <Node name="Data-Persistence-Project" expanded="True">
             <Node name="Assets" expanded="True">
               <Node name="Scripts" expanded="True">
-                <Node name="DeathZone.cs" selected="True" />
+                <Node name="MainManager.cs" selected="True" />
               </Node>
             </Node>
           </Node>
