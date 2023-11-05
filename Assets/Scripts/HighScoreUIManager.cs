@@ -20,7 +20,14 @@ public class HighScoreUIManager : MonoBehaviour
 
     public void updateText(TMP_Text oneScore, MainManager.HighScoreEntry hse)
     {
-        oneScore.text = $"{hse.scorer}            {hse.points}";
+        string spaces = "                  ";
+        int wantedSpaces = spaces.Length - hse.scorer.Length;
+        if (wantedSpaces < 2)
+        {
+            wantedSpaces = 2;
+        }
+        spaces = spaces.Remove(wantedSpaces - 1);
+        oneScore.text = $"{hse.scorer}{spaces}{hse.points}";
     }
 
 
