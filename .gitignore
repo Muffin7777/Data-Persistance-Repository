@@ -1,0 +1,8 @@
+Library/
+**/Logs
+Users/
+UserSettings/
+Temp/
+*.csproj
+.vsconfig
+.DS_Store
